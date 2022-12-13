@@ -58,6 +58,25 @@ class App extends React.Component {
     return maxId;
   }
 
+  validateName(name) {
+   if (name.length !== 0) {
+      return true;
+    } else {
+      alert("Name cannot be empty!")
+      return false;
+    }
+  }
+
+  validateEmail(email) {
+    var mailformat = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
+    if(email.match(mailformat)) {
+      return true;
+    } else {
+      alert("You have entered an invalid email address!")
+      return false;
+    }
+  }  
+
   // ATENTIE! Metoda submitAddForm este apelata din componenta userAddForm. Respectivei componente trebuie sa ii
   // pasam functia ca props. Nu uitati ca la declansarea unui event, pe langa parametri primiti de functia asociata
   // eventului respectiv, primul parametru primit este chiar evenimentul!
@@ -68,6 +87,9 @@ class App extends React.Component {
     // users din state => setState nu va mai primi ca parametru un obiect, ci o functie! (Check teorie)
     // Cand setState primeste ca parametru o functie, functia respectiva primeste ca parametru state-ul de dinaintea
     // aplicarii setState-ului curent.
+    if(!this.validateName(name) || !this.validateEmail(email)) {
+      return;
+    }
     this.setState(prevState => {
       // Functia trebuie sa returneze un obiect care are ca cheie campul din state care va fi modificat.
       return {
@@ -141,6 +163,20 @@ class App extends React.Component {
     }));
   }
 
+  RemoveUserById(event, id) {
+    // ATENTIE! Nu uitati de event.preventDefault, altfel la submiterea formularului se va reincarca pagina!
+    event.preventDefault();
+    this.setState(prevState => {
+
+      prevState.users = prevState.users.filter(user => user.id !== id);
+      return {
+        users: [
+          ...prevState.users
+        ]
+      }
+    });
+  }  
+
   render() {
     return(
       <div className="app" style={{background: this.state.background}}>
@@ -151,7 +187,9 @@ class App extends React.Component {
         this.props.submitAddForm, numele din this.props trebuie sa fie acelasi cu numele atributului pasat aici. */}
         {/* De asemenea, nu uitați că la pasarea funcției trebuie să folosim arrow functions pentru ca this să
         refere în continuare la App.js!!! Iar dacă folosim arrow functions, trebuie să pasăm și parametri corespunzători! */}
-        <UserAddForm submitAddForm={(event, name, email, isGoldClient) => this.submitAddForm(event, name, email, isGoldClient)}/>
+        <UserAddForm 
+          submitAddForm={(event, name, email, isGoldClient) => this.submitAddForm(event, name, email, isGoldClient)}
+        />
 
         {/* Decomentati linia de mai jos si comentati UserAddForm-ul de mai sus pentru a testa functia
         WRONG_submitAddForm. */}
@@ -166,7 +204,10 @@ class App extends React.Component {
         {/* <UserAddForm submitAddForm={this.NOT_RECOMMENDED_submitAddForm}/> */}
 
         {/* Randam componenta UserList, careia ii trimitem ca proprietati userii din state. */}
-        <UserList users={this.state.users}/>
+        <UserList 
+          users={this.state.users}
+          RemoveUserById={(event, id) => this.RemoveUserById(event, id)}  
+        />
 
         <input type="color" onChange={(event) => this.changeColor(event)}/>
       </div>

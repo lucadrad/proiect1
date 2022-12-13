@@ -3,7 +3,7 @@ import UserItem from './UserItem';
 
 // Observatie: Componenta UserList a redevenit o componenta declarata cu function.
 function UserList(props) {
-    const { users } = props;
+    const { users, RemoveUserById } = props;
 
     return (
         <div>
@@ -16,6 +16,7 @@ function UserList(props) {
                     email={ user.email }
                     isGoldClient={ user.isGoldClient }
                     key={ index }
+                    RemoveUserById={RemoveUserById}
                 />
             })}
         </div>
